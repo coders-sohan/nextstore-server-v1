@@ -1,0 +1,49 @@
+"title": "Apple MacBook pro 2017 15 inch",
+"slug": "apple-macbook-pro-2017-15-inch",
+"description": "This is a sample product description...",
+"price": 1500,
+"brand": "Apple",
+"category": "Leptop",
+"subCategory": "15 inch",
+"quantity": 10
+
+
+"title": "Apple MacBook pro 2020 13 inch m1",
+"slug": "apple-macbook-pro-2020-13-inch-m1",
+"description": "This is a sample product description...",
+"price": 1800.7,
+"brand": "Apple",
+"category": "Leptop",
+"subCategory": "13 inch",
+"quantity": 5
+
+
+
+"title": "Apple iPhone 15 pro",
+"slug": "apple-iphone-15-pro",
+"description": "This is a sample product description...",
+"price": 1000,
+"brand": "Apple",
+"category": "Mobile",
+"subCategory": "5G",
+"quantity": 15
+
+
+"title": "Apple iPhone 12 pro",
+"slug": "apple-iphone-12-pro",
+"description": "This is a sample product description...",
+"price": 800,
+"brand": "Apple",
+"category": "Mobile",
+"subCategory": "5G",
+"quantity": 11
+
+
+"title": "Apple iPhone X max pro",
+"slug": "apple-iphone-x-max-pro",
+"description": "This is a sample product description...",
+"price": 700,
+"brand": "Apple",
+"category": "Mobile",
+"subCategory": "4G",
+"quantity": 20

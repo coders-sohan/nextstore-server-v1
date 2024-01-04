@@ -4,6 +4,7 @@ const app = express();
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
 const dbConfig = require("./config/dbConfig");
 const mainRoute = require("./routes/mainRoute");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
@@ -13,6 +14,7 @@ dotenv.config();
 dbConfig();
 
 // all use here
+app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
