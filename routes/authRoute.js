@@ -14,7 +14,7 @@ const {
   updateSingleUserPassword,
   blockUser,
   unblockUser,
-} = require("../controller/userController");
+} = require("../controllers/userController");
 
 // auth middleware will apply when project is ready for production
 const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");

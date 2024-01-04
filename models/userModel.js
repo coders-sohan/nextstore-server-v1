@@ -56,14 +56,6 @@ var userSchema = new mongoose.Schema(
         ref: "Order",
       },
     ],
-    createdAt: {
-      type: Date,
-      default: Date.now(),
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now(),
-    },
     refreshToken: {
       type: String,
     },
