@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const Product = require("../models/productModel");
 const validateMongodbId = require("../utils/validateMongodbId");
+const { json } = require("body-parser");
 
 // create new product controller
 const createNewProduct = asyncHandler(async (req, res) => {
@@ -27,40 +28,15 @@ const createNewProduct = asyncHandler(async (req, res) => {
 // get all products using page number and limit or without those controller
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    if (
-      (req.query.page && req.query.limit) ||
-      req.query.page ||
-      req.query.limit
-    ) {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const startIndex = (page - 1) * limit;
-
-      const total = await Product.countDocuments();
-      const products = await Product.find().skip(startIndex).limit(limit);
-
-      res.json({
-        success: true,
-        message: "get all products successfully",
-        data: products,
-        meta: {
-          currentPage: page,
-          productsOnCurrentPage: products.length,
-          totalProducts: total,
-          totalPages: Math.ceil(total / limit),
-        },
-      });
-    } else {
-      const products = await Product.find();
-      res.json({
-        success: true,
-        message: "get all products successfully",
-        data: products,
-        meta: {
-          totalProducts: products.length,
-        },
-      });
-    }
+    const products = await Product.find();
+    res.json({
+      success: true,
+      message: "get all products successfully",
+      data: products,
+      meta: {
+        totalProducts: products.length,
+      },
+    });
   } catch (error) {
     throw new Error(error.message);
   }
@@ -154,6 +130,70 @@ const deleteProductById = asyncHandler(async (req, res) => {
   }
 });
 
+// filter products by multiple condition controller
+const filterProducts = asyncHandler(async (req, res) => {
+  try {
+    // filtering products
+    const queryObj = { ...req.query };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    let query = Product.find(JSON.parse(queryStr));
+
+    // sorting products
+    if (req.query.sort && typeof req.query.sort === "string") {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query.sort(sortBy);
+    } else {
+      query.sort("-createdAt");
+    }
+
+    // field limiting
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query.select(fields);
+    } else {
+      query.select("-__v");
+    }
+
+    // pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = (page - 1) * limit;
+    const total = await Product.countDocuments();
+    query.skip(startIndex).limit(limit);
+
+    const getAllFilteredProduct = await query;
+
+    // Create the response object
+    let response = {
+      success: true,
+      message: "filter products successfully...",
+      data: getAllFilteredProduct,
+      meta: {
+        totalProducts: getAllFilteredProduct.length,
+      },
+    };
+
+    // Conditionally add the pagination meta data
+    if (req.query.page || req.query.limit) {
+      response.meta = {
+        currentPage: page,
+        productsOnCurrentPage: getAllFilteredProduct.length,
+        totalProducts: total,
+        totalPages: Math.ceil(total / limit),
+      };
+    }
+
+    res.json(response);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
 // export all controllers
 module.exports = {
   createNewProduct,
@@ -162,4 +202,5 @@ module.exports = {
   getProductBySlug,
   updateProductById,
   deleteProductById,
+  filterProducts,
 };

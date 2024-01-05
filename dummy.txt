@@ -56,3 +56,20 @@
 "category": "Leptop",
 "subCategory": "15 inch",
 "quantity": 12
+
+
+"title": "HP 250 G8 Intel Celeron N4020 15.6" FHD Laptop",
+"description": "This is a sample product description...",
+"price": 500,
+"brand": "HP",
+"category": "Leptop",
+"subCategory": "15.6 inch",
+"quantity": 25
+
+"title": "Asus ROG Zephyrus M16 GU603ZW Core i9 12th Gen RTX 3070 Ti 8GB Graphics 16'' 165Hz Gaming Laptop",
+"description": "This is a sample product description...",
+"price": 3600,
+"brand": "ASUS",
+"category": "Leptop",
+"subCategory": "16 inch",
+"quantity": 5
