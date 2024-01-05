@@ -71,6 +71,32 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+// update a single user's password controller
+const updateUserPassword = asyncHandler(async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { password } = req.body;
+    const user = await User.findOne({ email: email });
+    if (password) {
+      user.password = password;
+      const updatedUser = await user.save();
+      res.json({
+        success: true,
+        message: "User password updated successfully...",
+        data: updatedUser,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "User password not updated...",
+        data: user,
+      });
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
 // handle refresh token controller
 const handleRefreshToken = asyncHandler(async (req, res) => {
   const cookies = req.cookies;
@@ -219,32 +245,6 @@ const updateSingleUser = asyncHandler(async (req, res) => {
       });
     } else {
       throw new Error("User not found...");
-    }
-  } catch (error) {
-    throw new Error(error.message);
-  }
-});
-
-// update a single user's password controller
-const updateUserPassword = asyncHandler(async (req, res) => {
-  try {
-    const { email } = req.params;
-    const { password } = req.body;
-    const user = await User.findOne({ email: email });
-    if (password) {
-      user.password = password;
-      const updatedUser = await user.save();
-      res.json({
-        success: true,
-        message: "User password updated successfully...",
-        data: updatedUser,
-      });
-    } else {
-      res.json({
-        success: false,
-        message: "User password not updated...",
-        data: user,
-      });
     }
   } catch (error) {
     throw new Error(error.message);
