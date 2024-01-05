@@ -163,8 +163,16 @@ const filterProducts = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = (page - 1) * limit;
-    const total = await Product.countDocuments();
     query.skip(startIndex).limit(limit);
+
+    let total;
+
+    if (req.query.page || req.query.limit) {
+      total = await Product.countDocuments();
+      if (startIndex >= total) {
+        throw new Error("This page does not exist...");
+      }
+    }
 
     const getAllFilteredProduct = await query;
 
