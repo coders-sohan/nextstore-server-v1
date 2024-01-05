@@ -47,3 +47,12 @@
 "category": "Mobile",
 "subCategory": "4G",
 "quantity": 20
+
+"title": "Apple MacBook pro 2017 15 inch (i7-4 gb grapich's) & (i5-4 gb grapich's)",
+"slug": "apple-macbook-pro-2017-15-inch-i74-gb-grapichs-and-i5-4-gb-grapichs-new",
+"description": "This is a sample product description...",
+"price": 1500,
+"brand": "Apple",
+"category": "Leptop",
+"subCategory": "15 inch",
+"quantity": 12

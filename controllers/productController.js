@@ -1,10 +1,18 @@
 const asyncHandler = require("express-async-handler");
+const slugify = require("slugify");
 const Product = require("../models/productModel");
 const validateMongodbId = require("../utils/validateMongodbId");
 
 // create new product controller
 const createNewProduct = asyncHandler(async (req, res) => {
   try {
+    if (req.body.title) {
+      req.body.slug = slugify(req.body.title, {
+        remove: /[*+~.()'"!:@]/g,
+        lower: true,
+        trim: true,
+      });
+    }
     const newProduct = await Product.create(req.body);
     res.json({
       success: true,
@@ -97,9 +105,61 @@ const getProductBySlug = asyncHandler(async (req, res) => {
   }
 });
 
+// update a single product by id controller
+const updateProductById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const productById = await Product.findById(id);
+    if (productById) {
+      // Remove the slug field from the request body
+      const updateData = { ...req.body };
+      delete updateData.slug;
+      // update product
+      const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+        new: true,
+        runValidators: true,
+      });
+      res.json({
+        success: true,
+        message: "update single product by id successfully...",
+        data: updatedProduct,
+      });
+    } else {
+      throw new Error("Product not found or maybe removed...");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// delete a product controller
+const deleteProductById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const productById = await Product.findById(id);
+    if (productById) {
+      await Product.findByIdAndDelete(id);
+      res.json({
+        success: true,
+        message: "delete single product by id successfully...",
+        data: {},
+      });
+    } else {
+      throw new Error("Product not found or maybe removed...");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// export all controllers
 module.exports = {
   createNewProduct,
   getAllProducts,
   getProductById,
   getProductBySlug,
+  updateProductById,
+  deleteProductById,
 };

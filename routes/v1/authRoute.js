@@ -14,10 +14,10 @@ const {
   updateSingleUserPassword,
   blockUser,
   unblockUser,
-} = require("../controllers/userController");
+} = require("../../controllers/userController");
 
 // auth middleware will apply when project is ready for production
-const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
+const { authMiddleware, isAdmin } = require("../../middlewares/authMiddleware");
 
 // all routes
 router.post("/register", createUser);

@@ -46,8 +46,17 @@ var productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    sold: {
+      type: Number,
+      default: 0,
+      // select: false, // hide from client but can be used in backend for admin protected routes
+    },
     offer: {
       type: Number,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
     reviews: [
       {
@@ -84,14 +93,6 @@ var productSchema = new mongoose.Schema(
         },
       },
     ],
-    sold: {
-      type: Number,
-      default: 0,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
     // weight: {
     //   type: Number,
     // },

@@ -181,6 +181,7 @@ const deleteSingleUser = asyncHandler(async (req, res) => {
       res.json({
         success: true,
         message: "User deleted successfully...",
+        data: {},
       });
     } else {
       throw new Error("User not found...");
