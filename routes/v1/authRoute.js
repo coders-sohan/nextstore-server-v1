@@ -11,7 +11,7 @@ const {
   getSingleUser,
   deleteSingleUser,
   updateSingleUser,
-  updateSingleUserPassword,
+  updateUserPassword,
   blockUser,
   unblockUser,
 } = require("../../controllers/userController");
@@ -28,7 +28,7 @@ router.get("/all-users", getAllUsers); // admin protected route
 router.get("/user/:id", getSingleUser); // admin protected route
 router.delete("/user/:id", deleteSingleUser); // admin protected route
 router.put("/user/:id", updateSingleUser);
-router.put("/change-pass/:email", updateSingleUserPassword);
+router.put("/change-pass/:email", updateUserPassword);
 router.put("/block-user/:id", blockUser); // admin protected route
 router.put("/unblock-user/:id", unblockUser); // admin protected route
 

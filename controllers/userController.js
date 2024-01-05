@@ -226,37 +226,25 @@ const updateSingleUser = asyncHandler(async (req, res) => {
 });
 
 // update a single user's password controller
-const updateSingleUserPassword = asyncHandler(async (req, res) => {
-  const { email } = req.params;
-  // Get the new password from the request body
-  const { password } = req.body;
-  // Hash the new password
-  const hashedPassword = await bcrypt.hash(password, 10);
-  // Update the user's password
+const updateUserPassword = asyncHandler(async (req, res) => {
   try {
-    const findUserByEmail = await User.findOne({ email: email });
-    if (findUserByEmail) {
-      const updatedUser = await User.findOneAndUpdate(
-        { email: email },
-        {
-          $set: {
-            password: hashedPassword,
-            updatedAt: Date.now(),
-          },
-        },
-        { new: true }
-      );
-      if (updatedUser) {
-        res.json({
-          success: true,
-          message: "User password updated successfully...",
-          data: updatedUser,
-        });
-      } else {
-        throw new Error("User not found...");
-      }
+    const { email } = req.params;
+    const { password } = req.body;
+    const user = await User.findOne({ email: email });
+    if (password) {
+      user.password = password;
+      const updatedUser = await user.save();
+      res.json({
+        success: true,
+        message: "User password updated successfully...",
+        data: updatedUser,
+      });
     } else {
-      throw new Error("User not found...");
+      res.json({
+        success: false,
+        message: "User password not updated...",
+        data: user,
+      });
     }
   } catch (error) {
     throw new Error(error.message);
@@ -331,7 +319,7 @@ module.exports = {
   getSingleUser,
   deleteSingleUser,
   updateSingleUser,
-  updateSingleUserPassword,
+  updateUserPassword,
   blockUser,
   unblockUser,
 };
