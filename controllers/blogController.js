@@ -46,7 +46,11 @@ const getBlogById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongodbId(id);
   try {
-    const blogById = await Blog.findById(id);
+    const blogById = await Blog.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
     res.json({
       success: true,
       message: "get blog by id successfully...",
@@ -61,7 +65,11 @@ const getBlogById = asyncHandler(async (req, res) => {
 const getBlogBySlug = asyncHandler(async (req, res) => {
   const { slug } = req.params;
   try {
-    const blogBySlug = await Blog.findOne({ slug });
+    const blogBySlug = await Blog.findOneAndUpdate(
+      { slug },
+      { $inc: { views: 1 } },
+      { new: true }
+    );
     res.json({
       success: true,
       message: "get blog by slug successfully...",
