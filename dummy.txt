@@ -73,3 +73,125 @@
 "category": "Leptop",
 "subCategory": "16 inch",
 "quantity": 5
+
+// dummy blog
+
+{
+  "title": "Blog Post 1",
+  "description": "This is the full description of blog post 1.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 2",
+  "description": "This is the full description of blog post 2.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 3",
+  "description": "This is the full description of blog post 3.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 4",
+  "description": "This is the full description of blog post 4.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 5",
+  "description": "This is the full description of blog post 5.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 6",
+  "description": "This is the full description of blog post 6.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 7",
+  "description": "This is the full description of blog post 7.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 8",
+  "description": "This is the full description of blog post 8.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 9",
+  "description": "This is the full description of blog post 9.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 10",
+  "description": "This is the full description of blog post 10.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 11",
+  "description": "This is the full description of blog post 11.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 12",
+  "description": "This is the full description of blog post 12.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 13",
+  "description": "This is the full description of blog post 13.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 14",
+  "description": "This is the full description of blog post 14.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 15",
+  "description": "This is the full description of blog post 15.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 16",
+  "description": "This is the full description of blog post 16.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 17",
+  "description": "This is the full description of blog post 17.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 18",
+  "description": "This is the full description of blog post 18.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 19",
+  "description": "This is the full description of blog post 19.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
+
+{
+  "title": "Blog Post 20",
+  "description": "This is the full description of blog post 20.",
+  "thumbnail": "https://dummyimage.com/600x400/0373e3/ffffff"
+}
