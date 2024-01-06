@@ -58,15 +58,15 @@ var productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    reviews: [
-      {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        review: String,
-      },
-    ],
+    // reviews: [
+    //   {
+    //     userId: {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "User",
+    //     },
+    //     review: String,
+    //   },
+    // ],
     // variants: [
     //   {
     //     color: {
@@ -87,12 +87,17 @@ var productSchema = new mongoose.Schema(
     ratings: [
       {
         star: Number,
+        review: String,
         postedBy: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
       },
     ],
+    totalRating: {
+      type: Number,
+      default: 0,
+    },
     // weight: {
     //   type: Number,
     // },
