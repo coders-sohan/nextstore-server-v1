@@ -1,8 +1,7 @@
+const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
-const Product = require("../models/productModel");
 const validateMongodbId = require("../utils/validateMongodbId");
-const { json } = require("body-parser");
 
 // create new product controller
 const createNewProduct = asyncHandler(async (req, res) => {
