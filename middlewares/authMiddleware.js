@@ -4,28 +4,34 @@ const asyncHandler = require("express-async-handler");
 
 // auth middleware
 const authMiddleware = asyncHandler(async (req, res, next) => {
+  console.log('authMiddleware called'); // Add this line
+
   let token;
   // check if token exists
   if (req?.headers?.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
-    // verify token
-    try {
-      if (token) {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // check if user exists
-        const findUser = await User.findById(decoded.id);
-        if (findUser) {
-          req.user = findUser;
-          next();
-        } else {
-          throw new Error("User not found...");
-        }
+  }
+
+  // verify token
+  try {
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // check if user exists
+      const findUser = await User.findById(decoded.id);
+      if (findUser) {
+        req.user = findUser;
+        next();
+      } else {
+        console.log('Sending "User not found..." response'); // Add this line
+        res.status(401).json({ message: "User not found..." });
       }
-    } catch (error) {
-      throw new Error("Please Login again (token is invalid or expired)");
+    } else {
+      console.log('Sending "No token attached to header..." response'); // Add this line
+      res.status(401).json({ message: "There is no token attached to header..." });
     }
-  } else {
-    throw new Error("There is no token attached to header...");
+  } catch (error) {
+    console.log('Sending "Please Login again..." response'); // Add this line
+    res.status(401).json({ message: "Please Login again (token is invalid or expired)" });
   }
 });
 

@@ -245,13 +245,15 @@ const addRating = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { productId, star, review } = req.body;
   validateMongodbId(productId);
+  let message;
+  let data;
   try {
     const product = await Product.findById(productId);
     const alreadyRated = product.ratings.find(
       (userId) => userId.postedBy.toString() === _id.toString()
     );
     if (alreadyRated) {
-      const updateRating = await Product.updateOne(
+      await Product.updateOne(
         { ratings: { $elemMatch: alreadyRated } },
         {
           $set: {
@@ -261,13 +263,9 @@ const addRating = asyncHandler(async (req, res) => {
         },
         { new: true }
       );
-      res.json({
-        success: true,
-        message: "Product rating updated successfully...",
-        // data: updateRating,
-      });
+      message = "Product rating updated successfully...";
     } else {
-      const rateProduct = await Product.findByIdAndUpdate(
+      data = await Product.findByIdAndUpdate(
         productId,
         {
           $push: {
@@ -280,11 +278,7 @@ const addRating = asyncHandler(async (req, res) => {
         },
         { new: true }
       );
-      res.json({
-        success: true,
-        message: "Product rated successfully...",
-        data: rateProduct,
-      });
+      message = "Product rated successfully...";
     }
     const getAllRatings = await Product.findById(productId);
     let totalRating = getAllRatings.ratings.length;
@@ -292,22 +286,25 @@ const addRating = asyncHandler(async (req, res) => {
       .map((item) => item.star)
       .reduce((prev, curr) => prev + curr, 0);
     let averageRating = ratingSum / totalRating;
-    const updateTotalRating = await Product.findByIdAndUpdate(
+    data = await Product.findByIdAndUpdate(
       productId,
       {
         totalRating: averageRating.toFixed(2),
       },
       { new: true }
     );
+    message = "Product total rating updated successfully...";
     res.json({
       success: true,
-      message: "Product total rating updated successfully...",
-      data: updateTotalRating,
+      message: message,
+      data: data,
     });
   } catch (error) {
     throw new Error(error.message);
   }
 });
+
+// 
 
 // export all controllers
 module.exports = {
