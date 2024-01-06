@@ -16,7 +16,7 @@ const createBlog = asyncHandler(async (req, res) => {
     const newBlog = await Blog.create(req.body);
     res.json({
       success: true,
-      message: "create new blog successfully",
+      message: "create new blog successfully...",
       data: newBlog,
     });
   } catch (error) {
@@ -30,7 +30,7 @@ const getAllBlogs = asyncHandler(async (req, res) => {
     const blogs = await Blog.find({});
     res.json({
       success: true,
-      message: "get all blogs successfully",
+      message: "get all blogs successfully...",
       data: blogs,
       meta: {
         total: blogs.length,
@@ -49,7 +49,7 @@ const getBlogById = asyncHandler(async (req, res) => {
     const blogById = await Blog.findById(id);
     res.json({
       success: true,
-      message: "get blog by id successfully",
+      message: "get blog by id successfully...",
       data: blogById,
     });
   } catch (error) {
@@ -64,9 +64,53 @@ const getBlogBySlug = asyncHandler(async (req, res) => {
     const blogBySlug = await Blog.findOne({ slug });
     res.json({
       success: true,
-      message: "get blog by slug successfully",
+      message: "get blog by slug successfully...",
       data: blogBySlug,
     });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// update blog controller
+const updateBlog = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const blog = await Blog.findById(id);
+    if (blog) {
+      const updatedBlog = await Blog.findByIdAndUpdate(id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+      res.json({
+        success: true,
+        message: "update blog successfully...",
+        data: updatedBlog,
+      });
+    } else {
+      throw new Error("blog not found...");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// delete blog controller
+const deleteBlog = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const blog = await Blog.findById(id);
+    if (blog) {
+      await Blog.findByIdAndDelete(id);
+      res.json({
+        success: true,
+        message: "delete blog successfully...",
+      });
+    } else {
+      throw new Error("blog not found...");
+    }
   } catch (error) {
     throw new Error(error.message);
   }
@@ -78,4 +122,6 @@ module.exports = {
   getAllBlogs,
   getBlogById,
   getBlogBySlug,
+  updateBlog,
+  deleteBlog,
 };
