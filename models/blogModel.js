@@ -21,6 +21,7 @@ var blogSchema = new mongoose.Schema(
     thumbnail: {
       type: String,
       required: true,
+      default: "https://dummyimage.com/600x400/0373e3/ffffff",
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
