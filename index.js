@@ -47,5 +47,5 @@ app.all("*", (req, res) => {
 
 // all listen here
 app.listen(port, () => {
-  console.log(`Server is running on port http://localhost:${port}...`);
+  console.log(`Live server is running on http://localhost:${port} this url...`);
 });
