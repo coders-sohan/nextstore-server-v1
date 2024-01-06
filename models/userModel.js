@@ -93,13 +93,13 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
 // password reset token generation
 userSchema.methods.createPasswordResetToken = async function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
-  // hash the reset token and set to resetPasswordToken field
-  this.resetPasswordToken = crypto
+  // hash the reset token and set to passwordResetToken field
+  this.passwordResetToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-  // set the resetPasswordExpire field to 10 minutes
-  this.resetPasswordExpire = Date.now() + 10 * (60 * 1000);
+  // set the passwordResetExpire field to 10 minutes
+  this.passwordResetExpire = Date.now() + 10 * (60 * 1000);
   return resetToken;
 };
 

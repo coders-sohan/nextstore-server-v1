@@ -1,10 +1,12 @@
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const User = require("../models/userModel");
 const { generateToken } = require("../config/jwtToken");
 const { generateRefreshToken } = require("../config/refreshToken");
 const validateMongodbId = require("../utils/validateMongodbId");
+const { sendEmail } = require("./emailController");
 
 // Create user controller
 const createUser = asyncHandler(async (req, res) => {
@@ -71,32 +73,6 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-// update a single user's password controller
-const updateUserPassword = asyncHandler(async (req, res) => {
-  try {
-    const { email } = req.params;
-    const { password } = req.body;
-    const user = await User.findOne({ email: email });
-    if (password) {
-      user.password = password;
-      const updatedUser = await user.save();
-      res.json({
-        success: true,
-        message: "User password updated successfully...",
-        data: updatedUser,
-      });
-    } else {
-      res.json({
-        success: false,
-        message: "User password not updated...",
-        data: user,
-      });
-    }
-  } catch (error) {
-    throw new Error(error.message);
-  }
-});
-
 // handle refresh token controller
 const handleRefreshToken = asyncHandler(async (req, res) => {
   const cookies = req.cookies;
@@ -120,6 +96,90 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
     });
   } else {
     throw new Error("No user found by refresh token in cookies...");
+  }
+});
+
+// update a single user's password controller
+const updateUserPassword = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+  validateMongodbId(id);
+  try {
+    const user = await User.findById(id);
+    if (password) {
+      user.password = password;
+      user.passwordChangedAt = Date.now(); // set passwordChangedAt field for password reset
+      const updatedUser = await user.save();
+      res.json({
+        success: true,
+        message: "User password updated successfully...",
+        data: updatedUser,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "User password not updated...",
+        data: user,
+      });
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// forgot password controller
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email: email });
+  try {
+    if (user) {
+      const token = await user.createPasswordResetToken();
+      await user.save();
+      const resetUrl = `Hi, ${user.firstname} ${user.lastname}! Please click on the link to reset your password: <a href='http://localhost:5000/api/v1/auth/forgot-pass/${token}'>Click Here</a>`;
+      const data = {
+        from: "nextstore0012@gmail.com",
+        to: user.email,
+        subject: "Reset Password Link",
+        text: "Reset Password",
+        html: resetUrl,
+      };
+      sendEmail(data);
+      res.json({
+        success: true,
+        message: "Reset password link sent to your email...",
+        data: { user, token },
+      });
+    } else {
+      throw new Error("User not found...");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// reset password controller
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpire: { $gt: Date.now() },
+  });
+  console.log(hashedToken, token, user);
+  if (user) {
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpire = undefined;
+    user.passwordChangedAt = Date.now();
+    await user.save();
+    res.json({
+      success: true,
+      message: "Password reset successfully...",
+      data: user,
+    });
+  } else {
+    throw new Error("Token is invalid or has expired...");
   }
 });
 
@@ -314,12 +374,14 @@ module.exports = {
   createUser,
   loginUser,
   handleRefreshToken,
+  updateUserPassword,
+  forgotPassword,
+  resetPassword,
   logoutUser,
   getAllUsers,
   getSingleUser,
   deleteSingleUser,
   updateSingleUser,
-  updateUserPassword,
   blockUser,
   unblockUser,
 };

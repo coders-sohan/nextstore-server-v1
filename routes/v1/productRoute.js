@@ -21,4 +21,5 @@ router.put("/update-product/:id", updateProductById); // admin protected route
 router.delete("/delete-product/:id", deleteProductById); // admin protected route
 router.get("/filter-products", filterProducts);
 
+// export router
 module.exports = router;
