@@ -12,6 +12,9 @@ const {
   filterProducts,
 } = require("../../controllers/productController");
 
+// auth middleware will apply when project is ready for production
+const { authMiddleware, isAdmin } = require("../../middlewares/authMiddleware");
+
 // all routes
 router.get("/get-all", getAllProducts);
 router.post("/create-product", createNewProduct); // admin protected route

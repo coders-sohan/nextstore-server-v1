@@ -1,4 +1,5 @@
 const Blog = require("../models/blogModel");
+const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const validateMongodbId = require("../utils/validateMongodbId");
@@ -50,7 +51,9 @@ const getBlogById = asyncHandler(async (req, res) => {
       id,
       { $inc: { views: 1 } },
       { new: true }
-    );
+    )
+      .populate("likes")
+      .populate("dislikes");
     res.json({
       success: true,
       message: "get blog by id successfully...",
@@ -69,7 +72,9 @@ const getBlogBySlug = asyncHandler(async (req, res) => {
       { slug },
       { $inc: { views: 1 } },
       { new: true }
-    );
+    )
+      .populate("likes")
+      .populate("dislikes");
     res.json({
       success: true,
       message: "get blog by slug successfully...",
@@ -124,6 +129,130 @@ const deleteBlog = asyncHandler(async (req, res) => {
   }
 });
 
+// update blog likes controller
+const updateBlogLikes = asyncHandler(async (req, res) => {
+  const { id: blogId } = req.params;
+  validateMongodbId(blogId);
+  // Find the blog which you want to be liked
+  const blog = await Blog.findById(blogId);
+  // find the login user
+  const loginUserId = req?.user?._id;
+  // find if the user has liked the blog
+  const isLiked = blog?.isLiked;
+  // find if the user has disliked the blog
+  const alreadyDisliked = blog?.dislikes?.find(
+    (userId) => userId?.toString() === loginUserId?.toString()
+  );
+  // if the user has disliked the blog then remove the user from dislikes array
+  if (alreadyDisliked) {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $pull: { dislikes: loginUserId },
+        isDisliked: false,
+      },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "blog disliked successfully...",
+      data: blog,
+    });
+  }
+  // if the user has already liked the blog then remove the user from likes array, else add the user to array
+  if (isLiked) {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $pull: { likes: loginUserId },
+        isLiked: false,
+      },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "blog unliked successfully...",
+      data: blog,
+    });
+  } else {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $push: { likes: loginUserId },
+        isLiked: true,
+      },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "blog liked successfully...",
+      data: blog,
+    });
+  }
+});
+
+// update blog dislikes controller
+const updateBlogDislikes = asyncHandler(async (req, res) => {
+  const { id: blogId } = req.params;
+  validateMongodbId(blogId);
+  // Find the blog which you want to be disliked
+  const blog = await Blog.findById(blogId);
+  // find the login user
+  const loginUserId = req?.user?._id;
+  // find if the user has disliked the blog
+  const isDisliked = blog?.isDisliked;
+  // find if the user has liked the blog
+  const alreadyLiked = blog?.likes?.find(
+    (userId) => userId?.toString() === loginUserId?.toString()
+  );
+  // if the user has liked the blog then remove the user from likes array
+  if (alreadyLiked) {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $pull: { likes: loginUserId },
+        isLiked: false,
+      },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "blog liked successfully...",
+      data: blog,
+    });
+  }
+  // if the user has already disliked the blog then remove the user from dislikes array, else add the user to array
+  if (isDisliked) {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $pull: { dislikes: loginUserId },
+        isDisliked: false,
+      },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "blog undisliked successfully...",
+      data: blog,
+    });
+  } else {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $push: { dislikes: loginUserId },
+        isDisliked: true,
+      },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "blog disliked successfully...",
+      data: blog,
+    });
+  }
+});
+
 // export all blogs controller
 module.exports = {
   createBlog,
@@ -132,4 +261,6 @@ module.exports = {
   getBlogBySlug,
   updateBlog,
   deleteBlog,
+  updateBlogLikes,
+  updateBlogDislikes,
 };
