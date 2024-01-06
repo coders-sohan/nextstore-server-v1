@@ -264,7 +264,7 @@ const addRating = asyncHandler(async (req, res) => {
       res.json({
         success: true,
         message: "Product rating updated successfully...",
-        data: updateRating,
+        // data: updateRating,
       });
     } else {
       const rateProduct = await Product.findByIdAndUpdate(
