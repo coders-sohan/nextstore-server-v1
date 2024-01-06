@@ -25,7 +25,8 @@ const port = process.env.PORT || 5000;
 // global routes here
 app.get("/", (req, res) => {
   res.json({
-    message: "nextstore server is running",
+    success: true,
+    message: "nextstore server is running...",
   });
 });
 
@@ -39,11 +40,12 @@ app.use(errorHandler);
 // route not found handler
 app.all("*", (req, res) => {
   res.json({
-    message: "route not found",
+    success: false,
+    message: "route not found...",
   });
 });
 
 // all listen here
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port http://localhost:${port}...`);
 });
