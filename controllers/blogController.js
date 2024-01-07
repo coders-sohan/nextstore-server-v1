@@ -273,7 +273,6 @@ const uploadBlogImages = asyncHandler(async (req, res) => {
     const blog = await Blog.findById(id);
     const images = blog.images;
     urls.forEach((url) => images.push(url));
-    console.log(images);
     const updatedBlog = await Blog.findByIdAndUpdate(
       id,
       { images: images },

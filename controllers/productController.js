@@ -324,7 +324,6 @@ const uploadProductImages = asyncHandler(async (req, res) => {
     const product = await Product.findById(id);
     const images = product.images;
     urls.forEach((url) => images.push(url));
-    console.log(images);
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       { images: images },

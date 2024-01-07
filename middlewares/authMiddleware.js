@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 
 // auth middleware
 const authMiddleware = asyncHandler(async (req, res, next) => {
-  console.log('authMiddleware called'); // Add this line
+  console.log("authMiddleware called"); // Add this line
 
   let token;
   // check if token exists
@@ -22,16 +22,17 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
         req.user = findUser;
         next();
       } else {
-        console.log('Sending "User not found..." response'); // Add this line
         res.status(401).json({ message: "User not found..." });
       }
     } else {
-      console.log('Sending "No token attached to header..." response'); // Add this line
-      res.status(401).json({ message: "There is no token attached to header..." });
+      res
+        .status(401)
+        .json({ message: "There is no token attached to header..." });
     }
   } catch (error) {
-    console.log('Sending "Please Login again..." response'); // Add this line
-    res.status(401).json({ message: "Please Login again (token is invalid or expired)" });
+    res
+      .status(401)
+      .json({ message: "Please Login again (token is invalid or expired)" });
   }
 });
 
