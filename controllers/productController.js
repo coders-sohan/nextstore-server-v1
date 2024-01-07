@@ -1,5 +1,7 @@
 const Product = require("../models/productModel");
 const User = require("../models/userModel");
+const Cart = require("../models/cartModel");
+const Order = require("../models/orderModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const fs = require("fs");
@@ -242,6 +244,87 @@ const addToWishlist = asyncHandler(async (req, res) => {
   }
 });
 
+// add to cart controller based on user id
+const addToCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { productId, count } = req.body;
+  validateMongodbId(productId);
+  try {
+    const product = await Product.findById(productId);
+    if (product) {
+      let cart = await Cart.findOne({ orderedBy: _id });
+      // Check if cart exists
+      if (cart) {
+        let itemIndex = cart.products.findIndex(
+          (p) => p.product._id.toString() === productId
+        );
+        if (itemIndex > -1) {
+          let productItem = cart.products[itemIndex];
+          productItem.count = count;
+          cart.products[itemIndex] = productItem;
+        } else {
+          cart.products.push({
+            product: productId,
+            count: count,
+            price: product.price,
+          });
+        }
+        // Calculate the cart total
+        cart.cartTotal = cart.products.reduce((total, product) => {
+          let price = Number(product.price) || 0;
+          let count = Number(product.count) || 0;
+          return total + price * count;
+        }, 0);
+        cart = await cart.save();
+
+        // Update the user's cart
+        let user = await User.findByIdAndUpdate(
+          _id,
+          { cart: cart._id },
+          { new: true }
+        );
+
+        return res.json({
+          success: true,
+          message: "Product added to cart successfully...",
+          data: { cart, user },
+        });
+      } else {
+        const newCart = await Cart.create({
+          orderedBy: _id,
+          products: [
+            {
+              product: productId,
+              count: count,
+              price: product.price,
+            },
+          ],
+          cartTotal: (product.price * count).toFixed(2),
+        });
+
+        // Update the user's cart
+        let user = await User.findByIdAndUpdate(
+          _id,
+          { cart: newCart._id },
+          { new: true }
+        );
+
+        return res.json({
+          success: true,
+          message: "Product added to cart successfully...",
+          data: { cart: newCart, user },
+        });
+      }
+    } else {
+      throw new Error("Product not found or maybe removed...");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// order product controller based on user id and reduce product quantity
+
 // add rating controller based on user id
 const addRating = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -349,6 +432,7 @@ module.exports = {
   deleteProductById,
   filterProducts,
   addToWishlist,
+  addToCart,
   addRating,
   uploadProductImages,
 };

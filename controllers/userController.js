@@ -1,8 +1,9 @@
-const bcrypt = require("bcrypt");
+const User = require("../models/userModel");
+const Cart = require("../models/cartModel");
+const Coupon = require("../models/couponModel");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const User = require("../models/userModel");
 const { generateToken } = require("../config/jwtToken");
 const { generateRefreshToken } = require("../config/refreshToken");
 const validateMongodbId = require("../utils/validateMongodbId");
@@ -416,10 +417,123 @@ const getUserWishlist = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongodbId(_id);
   try {
-    const findUser = await User.findById(_id).populate("wishlist");
+    const findUserWishlist = await User.findById(_id).populate("wishlist");
     res.json({
       success: true,
       message: "Get user wishlist successfully...",
+      data: findUserWishlist,
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// get user cart controller
+const getUserCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbId(_id);
+  try {
+    const findUserCart = await User.findById(_id).populate({
+      path: "cart",
+      populate: {
+        path: "products.product",
+        model: "Product",
+      },
+    });
+    res.json({
+      success: true,
+      message: "Get user cart successfully...",
+      data: findUserCart,
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// empty user cart controller (remove from cart colloection too)
+const emptyUserCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbId(_id);
+  try {
+    const findUserCart = await User.findById(_id);
+    if (findUserCart) {
+      // remove from cart collection
+      await Cart.findOneAndDelete({ orderedBy: _id });
+      // empty user cart
+      const updatedUserCart = await User.findByIdAndUpdate(
+        _id,
+        {
+          $set: {
+            cart: [],
+          },
+        },
+        { new: true }
+      );
+      res.json({
+        success: true,
+        message: "User cart emptied successfully...",
+        data: updatedUserCart,
+      });
+    } else {
+      throw new Error("User not found...");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// apply coupon to user cart controller
+const applyCouponToUserCart = asyncHandler(async (req, res) => {
+  const { coupon } = req.body;
+  const { _id } = req.user;
+  validateMongodbId(_id);
+  try {
+    const validCoupon = await Coupon.findOne({ code: coupon });
+    console.log(validCoupon);
+    if (validCoupon && validCoupon.isActive) {
+      const findUserCart = await Cart.findOne({ orderedBy: _id });
+      if (findUserCart) {
+        const totalAfterDiscount = (
+          findUserCart.cartTotal -
+          (findUserCart.cartTotal * validCoupon.discount) / 100
+        ).toFixed(2);
+        const updatedUserCart = await Cart.findOneAndUpdate(
+          { orderedBy: _id },
+          {
+            $set: {
+              totalAfterDiscount,
+            },
+          },
+          { new: true }
+        ).populate({
+          path: "products.product",
+          model: "Product",
+        });
+        res.json({
+          success: true,
+          message: "Coupon applied to user cart successfully...",
+          data: updatedUserCart,
+        });
+      } else {
+        throw new Error("User cart not found...");
+      }
+    } else {
+      throw new Error("Invalid coupon, try another one...");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// get user orders controller
+const getUserOrders = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbId(_id);
+  try {
+    const findUser = await User.findById(_id).populate("orders");
+    res.json({
+      success: true,
+      message: "Get user orders successfully...",
       data: findUser,
     });
   } catch (error) {
@@ -467,5 +581,9 @@ module.exports = {
   blockUser,
   unblockUser,
   getUserWishlist,
+  getUserCart,
+  emptyUserCart,
+  applyCouponToUserCart,
+  getUserOrders,
   updateUserAddress,
 };

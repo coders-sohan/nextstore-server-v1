@@ -11,6 +11,7 @@ const {
   deleteProductById,
   filterProducts,
   addToWishlist,
+  addToCart,
   addRating,
   uploadProductImages,
 } = require("../../controllers/productController");
@@ -33,6 +34,7 @@ router.delete("/delete-product/:id", deleteProductById); // admin protected rout
 router.get("/filter-products", filterProducts);
 // dynamic control routes based on user
 router.put("/add-to-wishlist", authMiddleware, addToWishlist);
+router.put("/add-to-cart", authMiddleware, addToCart);
 router.put("/add-rating", authMiddleware, addRating);
 // product image upload routes
 router.put(

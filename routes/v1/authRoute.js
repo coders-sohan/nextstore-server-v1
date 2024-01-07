@@ -18,6 +18,10 @@ const {
   blockUser,
   unblockUser,
   getUserWishlist,
+  getUserCart,
+  emptyUserCart,
+  applyCouponToUserCart,
+  getUserOrders,
   updateUserAddress,
 } = require("../../controllers/userController");
 
@@ -42,6 +46,10 @@ router.put("/unblock-user/:id", unblockUser); // admin protected route
 router.post("/admin-login", loginAdmin);
 // user ecommerce related routes
 router.get("/wishlist", authMiddleware, getUserWishlist);
+router.get("/cart", authMiddleware, getUserCart);
+router.put("/empty-cart", authMiddleware, emptyUserCart);
+router.put("/apply-coupon", authMiddleware, applyCouponToUserCart);
+router.get("/orders", authMiddleware, getUserOrders);
 router.put("/update-address", authMiddleware, updateUserAddress);
 
 // export router
