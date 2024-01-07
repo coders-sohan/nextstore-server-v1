@@ -39,7 +39,8 @@ var productSchema = new mongoose.Schema(
     },
     images: [
       {
-        type: String,
+        url: String,
+        id: String,
       },
     ],
     quantity: {

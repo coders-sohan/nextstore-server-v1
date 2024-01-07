@@ -2,7 +2,9 @@ const Product = require("../models/productModel");
 const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
+const fs = require("fs");
 const validateMongodbId = require("../utils/validateMongodbId");
+const cloudinaryImageUpload = require("../utils/cloudinary");
 
 // create new product controller
 const createNewProduct = asyncHandler(async (req, res) => {
@@ -304,7 +306,39 @@ const addRating = asyncHandler(async (req, res) => {
   }
 });
 
-// 
+// upload product images controller based on product id
+const uploadProductImages = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const uploader = async (path) =>
+      await cloudinaryImageUpload(path, "images");
+    const urls = [];
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await uploader(path);
+      urls.push(newPath);
+      fs.unlinkSync(path);
+    }
+    const product = await Product.findById(id);
+    const images = product.images;
+    urls.forEach((url) => images.push(url));
+    console.log(images);
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { images: images },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "Product images uploaded successfully...",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
 
 // export all controllers
 module.exports = {
@@ -317,4 +351,5 @@ module.exports = {
   filterProducts,
   addToWishlist,
   addRating,
+  uploadProductImages,
 };

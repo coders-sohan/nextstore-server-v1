@@ -1,15 +1,16 @@
 const multer = require("multer");
 const sharp = require("sharp");
 const path = require("path");
+const fs = require("fs");
 
 // multer storage
 const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../public/images"));
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../public/images/"));
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, `${file.fieldname}-${uniqueSuffix}.jpeg`);
+  filename: function (req, file, cb) {
+    const uniquesuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniquesuffix + ".jpeg");
   },
 });
 
@@ -18,7 +19,7 @@ const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new Error("Not an image! Please upload only images...."), false);
+    cb({ message: "Unsupported file format" }, false);
   }
 };
 
@@ -33,7 +34,7 @@ const uploadImage = multer({
 
 // product image resize
 const productImageResize = async (req, res, next) => {
-  if (!req.file) return next();
+  if (!req.files) return next();
   await Promise.all(
     req.files.map(async (file) => {
       await sharp(file.path)
@@ -41,6 +42,7 @@ const productImageResize = async (req, res, next) => {
         .toFormat("jpeg")
         .jpeg({ quality: 90 })
         .toFile(`public/images/products/${file.filename}`);
+      fs.unlinkSync(`public/images/products/${file.filename}`);
     })
   );
   next();
@@ -48,7 +50,7 @@ const productImageResize = async (req, res, next) => {
 
 // blog image resize
 const blogImageResize = async (req, res, next) => {
-  if (!req.file) return next();
+  if (!req.files) return next();
   await Promise.all(
     req.files.map(async (file) => {
       await sharp(file.path)
@@ -56,6 +58,7 @@ const blogImageResize = async (req, res, next) => {
         .toFormat("jpeg")
         .jpeg({ quality: 90 })
         .toFile(`public/images/blogs/${file.filename}`);
+      fs.unlinkSync(`public/images/blogs/${file.filename}`);
     })
   );
   next();
@@ -71,6 +74,7 @@ const userImageResize = async (req, res, next) => {
         .toFormat("jpeg")
         .jpeg({ quality: 90 })
         .toFile(`public/images/users/${file.filename}`);
+      fs.unlinkSync(`public/images/users/${file.filename}`);
     })
   );
   next();

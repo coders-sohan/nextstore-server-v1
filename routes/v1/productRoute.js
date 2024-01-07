@@ -12,10 +12,16 @@ const {
   filterProducts,
   addToWishlist,
   addRating,
+  uploadProductImages,
 } = require("../../controllers/productController");
 
 // auth middleware will apply when project is ready for production
 const { authMiddleware, isAdmin } = require("../../middlewares/authMiddleware");
+// image upload middleware
+const {
+  uploadImage,
+  productImageResize,
+} = require("../../middlewares/uploadImages");
 
 // all routes
 router.get("/get-all", getAllProducts);
@@ -28,6 +34,13 @@ router.get("/filter-products", filterProducts);
 // dynamic control routes based on user
 router.put("/add-to-wishlist", authMiddleware, addToWishlist);
 router.put("/add-rating", authMiddleware, addRating);
+// product image upload routes
+router.put(
+  "/upload-images/:id",
+  uploadImage.array("images", 10),
+  productImageResize,
+  uploadProductImages
+);
 
 // export router
 module.exports = router;

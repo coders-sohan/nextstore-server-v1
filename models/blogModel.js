@@ -18,11 +18,12 @@ var blogSchema = new mongoose.Schema(
     shortDescription: {
       type: String,
     },
-    thumbnail: {
-      type: String,
-      required: true,
-      default: "https://dummyimage.com/600x400/0373e3/ffffff",
-    },
+    images: [
+      {
+        url: String,
+        id: String,
+      },
+    ],
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
