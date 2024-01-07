@@ -414,9 +414,37 @@ const unblockUser = asyncHandler(async (req, res) => {
 // get user wishlist controller
 const getUserWishlist = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  validateMongodbId(id);
+  validateMongodbId(_id);
+  try {
+    const findUser = await User.findById(_id).populate("wishlist");
+    res.json({
+      success: true,
+      message: "Get user wishlist successfully...",
+      data: findUser,
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// update user adderess controller
+const updateUserAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbId(_id);
+  const newAddress = req.body.address;
   try {
     const findUser = await User.findById(_id);
+    if (findUser) {
+      findUser.address = newAddress;
+      const updatedUser = await findUser.save();
+      res.json({
+        success: true,
+        message: "User address updated successfully...",
+        data: updatedUser,
+      });
+    } else {
+      throw new Error("User not found...");
+    }
   } catch (error) {
     throw new Error(error.message);
   }
@@ -439,4 +467,5 @@ module.exports = {
   blockUser,
   unblockUser,
   getUserWishlist,
+  updateUserAddress,
 };

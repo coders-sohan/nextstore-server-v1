@@ -18,6 +18,7 @@ const {
   blockUser,
   unblockUser,
   getUserWishlist,
+  updateUserAddress,
 } = require("../../controllers/userController");
 
 // auth middleware will apply when project is ready for production
@@ -40,7 +41,8 @@ router.put("/unblock-user/:id", unblockUser); // admin protected route
 // admin login route
 router.post("/admin-login", loginAdmin);
 // user ecommerce related routes
-router.get("/wishlist", getUserWishlist);
+router.get("/wishlist", authMiddleware, getUserWishlist);
+router.put("/update-address", authMiddleware, updateUserAddress);
 
 // export router
 module.exports = router;
