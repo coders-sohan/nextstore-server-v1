@@ -5,6 +5,7 @@ const router = express.Router();
 const {
   createUser,
   loginUser,
+  loginAdmin,
   handleRefreshToken,
   forgotPassword,
   resetPassword,
@@ -16,6 +17,7 @@ const {
   updateUserPassword,
   blockUser,
   unblockUser,
+  getUserWishlist,
 } = require("../../controllers/userController");
 
 // auth middleware will apply when project is ready for production
@@ -35,6 +37,10 @@ router.delete("/user/:id", deleteSingleUser); // admin protected route
 router.put("/user/:id", updateSingleUser);
 router.put("/block-user/:id", blockUser); // admin protected route
 router.put("/unblock-user/:id", unblockUser); // admin protected route
+// admin login route
+router.post("/admin-login", loginAdmin);
+// user ecommerce related routes
+router.get("/wishlist", getUserWishlist);
 
 // export router
 module.exports = router;

@@ -34,7 +34,7 @@ const createUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   // check if user exists
-  const findUser = await User.findOne({ email: email });
+  const findUser = await User.findOne({ email: email, role: "user" });
   if (findUser) {
     // check if password matches
     const isMatch = await findUser.isPasswordMatched(password);
@@ -70,6 +70,49 @@ const loginUser = asyncHandler(async (req, res) => {
     }
   } else {
     throw new Error("User not found...");
+  }
+});
+
+// login admin controller
+const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  // check if user exists and is an admin
+  const findUser = await User.findOne({ email: email, role: "admin" });
+  if (findUser) {
+    // check if password matches
+    const isMatch = await findUser.isPasswordMatched(password);
+    if (isMatch) {
+      // generate token
+      const token = generateRefreshToken(findUser._id);
+      // save token to database
+      await User.findByIdAndUpdate(
+        findUser._id,
+        {
+          $set: {
+            refreshToken: token,
+          },
+        },
+        { new: true }
+      );
+      // send cookie
+      res.cookie("refreshToken", token, {
+        httpOnly: true,
+        maxAge: 2 * 60 * 60 * 1000, // 2 hours
+      });
+      // send response
+      res.json({
+        success: true,
+        message: "Admin logged in successfully...",
+        data: {
+          ...findUser._doc,
+          token: generateToken(findUser._id),
+        },
+      });
+    } else {
+      throw new Error("Invalid password...");
+    }
+  } else {
+    throw new Error("Admin not found...");
   }
 });
 
@@ -368,10 +411,22 @@ const unblockUser = asyncHandler(async (req, res) => {
   }
 });
 
+// get user wishlist controller
+const getUserWishlist = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbId(id);
+  try {
+    const findUser = await User.findById(_id);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
 // export all controllers
 module.exports = {
   createUser,
   loginUser,
+  loginAdmin,
   handleRefreshToken,
   updateUserPassword,
   forgotPassword,
@@ -383,4 +438,5 @@ module.exports = {
   updateSingleUser,
   blockUser,
   unblockUser,
+  getUserWishlist,
 };
