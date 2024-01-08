@@ -43,14 +43,18 @@ router.put("/user/:id", updateSingleUser);
 router.put("/block-user/:id", blockUser); // admin protected route
 router.put("/unblock-user/:id", unblockUser); // admin protected route
 // admin login route
-router.post("/admin-login", loginAdmin);
+router.post("/admin-login", loginAdmin); // admin protected route
 // user ecommerce related routes
-router.get("/wishlist", authMiddleware, getUserWishlist);
-router.get("/cart", authMiddleware, getUserCart);
-router.put("/empty-cart", authMiddleware, emptyUserCart);
-router.put("/apply-coupon", authMiddleware, applyCouponToUserCart);
-router.get("/orders", authMiddleware, getUserOrders);
-router.put("/update-address", authMiddleware, updateUserAddress);
+router.get("/user-account/wishlist", authMiddleware, getUserWishlist);
+router.get("/user-account/cart", authMiddleware, getUserCart);
+router.put("/user-account/empty-cart", authMiddleware, emptyUserCart);
+router.put(
+  "/user-account/cart/apply-coupon",
+  authMiddleware,
+  applyCouponToUserCart
+);
+router.get("/user-account/orders", authMiddleware, getUserOrders);
+router.put("/user-account/update-address", authMiddleware, updateUserAddress);
 
 // export router
 module.exports = router;
