@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Coupon = require("../models/couponModel");
+const Order = require("../models/orderModel");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -550,6 +551,34 @@ const getUserOrders = asyncHandler(async (req, res) => {
   }
 });
 
+// update user orders controller
+const updateUserOrders = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  const { orderStatus } = req.body;
+  try {
+    const findUserOrder = await Order.findByIdAndUpdate(
+      id,
+      {
+        orderStatus: orderStatus,
+        "paymentIntent.status": orderStatus,
+      },
+      { new: true }
+    );
+    if (findUserOrder) {
+      res.json({
+        success: true,
+        message: "User order updated successfully...",
+        data: findUserOrder,
+      });
+    } else {
+      throw new Error("User order not found...");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
 // update user adderess controller
 const updateUserAddress = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -594,5 +623,6 @@ module.exports = {
   emptyUserCart,
   applyCouponToUserCart,
   getUserOrders,
+  updateUserOrders,
   updateUserAddress,
 };

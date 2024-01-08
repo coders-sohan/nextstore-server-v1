@@ -22,6 +22,7 @@ const {
   emptyUserCart,
   applyCouponToUserCart,
   getUserOrders,
+  updateUserOrders,
   updateUserAddress,
 } = require("../../controllers/userController");
 
@@ -54,6 +55,7 @@ router.put(
   applyCouponToUserCart
 );
 router.get("/user-account/orders", authMiddleware, getUserOrders);
+router.put("/user-account/update-orders/:id", authMiddleware, updateUserOrders);
 router.put("/user-account/update-address", authMiddleware, updateUserAddress);
 
 // export router
