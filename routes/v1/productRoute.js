@@ -12,6 +12,8 @@ const {
   filterProducts,
   addToWishlist,
   addToCart,
+  orderProduct,
+  getAllOrders,
   addRating,
   uploadProductImages,
 } = require("../../controllers/productController");
@@ -35,6 +37,8 @@ router.get("/filter-products", filterProducts);
 // dynamic control routes based on user
 router.put("/add-to-wishlist", authMiddleware, addToWishlist);
 router.put("/add-to-cart", authMiddleware, addToCart);
+router.put("/place-order", authMiddleware, orderProduct);
+router.get("/all-orders", getAllOrders);
 router.put("/add-rating", authMiddleware, addRating);
 // product image upload routes
 router.put(

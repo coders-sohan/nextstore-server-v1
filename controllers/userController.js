@@ -530,7 +530,16 @@ const getUserOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongodbId(_id);
   try {
-    const findUser = await User.findById(_id).populate("orders");
+    const findUser = await User.findById(_id).populate({
+      path: "orders",
+      options: {
+        sort: { createdAt: -1 }, // sort in descending order
+      },
+      populate: {
+        path: "products.product",
+        model: "Product",
+      },
+    });
     res.json({
       success: true,
       message: "Get user orders successfully...",

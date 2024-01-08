@@ -5,6 +5,7 @@ const Order = require("../models/orderModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const fs = require("fs");
+const uniqid = require("uniqid");
 const validateMongodbId = require("../utils/validateMongodbId");
 const cloudinaryImageUpload = require("../utils/cloudinary");
 
@@ -323,7 +324,106 @@ const addToCart = asyncHandler(async (req, res) => {
   }
 });
 
-// order product controller based on user id and reduce product quantity
+// order product controller based on user id and reduce product quantity after order
+const orderProduct = asyncHandler(async (req, res) => {
+  const { paymentMethod, couponApplied } = req.body;
+  const { _id } = req.user;
+  validateMongodbId(_id);
+  try {
+    if (!paymentMethod) {
+      throw new Error("Payment method is required...");
+    }
+    const userCart = await Cart.findOne({ orderedBy: _id });
+    let finalAmount = 0;
+    if (userCart) {
+      finalAmount = userCart.cartTotal;
+    } else {
+      throw new Error("Cart not found or maybe removed...");
+    }
+    if (couponApplied && userCart.totalAfterDiscount) {
+      finalAmount = userCart.totalAfterDiscount;
+    } else {
+      finalAmount = userCart.cartTotal;
+    }
+    const newOrder = await Order.create({
+      products: userCart.products,
+      paymentIntent: {
+        id: uniqid("order-"),
+        amount: finalAmount,
+        currency: "usd",
+        paymentMethod: paymentMethod,
+        status: "Not Processed",
+        createdAt: Date(),
+      },
+      orderedBy: _id,
+      orderStatus: "Not Processed",
+      paymentMethod: paymentMethod,
+      orderTotal: userCart.cartTotal,
+      totalAfterDiscount: userCart.totalAfterDiscount,
+      couponApplied: couponApplied,
+    });
+    // Reduce the quantity, increase the sold
+    let bulkOption = userCart.products.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product._id },
+          update: {
+            $inc: {
+              quantity: -item.count,
+              sold: +item.count,
+            },
+          },
+        },
+      };
+    });
+    // Update the product quantity and sold
+    const updatedProduct = await Product.bulkWrite(bulkOption, {});
+    // Remove the cart
+    await Cart.findOneAndDelete({ orderedBy: _id });
+    // Update the user's cart
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      { cart: [] }, // or { cart: null }
+      { new: true }
+    );
+    // update the user's order
+    await User.findByIdAndUpdate(
+      _id,
+      { $push: { orders: newOrder._id } },
+      { new: true }
+    );
+    res.json({
+      success: true,
+      message: "Order placed successfully...",
+      data: {
+        newOrder,
+        updatedProduct,
+        updatedUser,
+      },
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
+// get all orders controller
+const getAllOrders = asyncHandler(async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .sort("-createdAt")
+      .populate("products.product");
+    res.json({
+      success: true,
+      message: "get all orders successfully...",
+      data: orders,
+      meta: {
+        totalOrders: orders.length,
+      },
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
 
 // add rating controller based on user id
 const addRating = asyncHandler(async (req, res) => {
@@ -433,6 +533,8 @@ module.exports = {
   filterProducts,
   addToWishlist,
   addToCart,
+  orderProduct,
+  getAllOrders,
   addRating,
   uploadProductImages,
 };

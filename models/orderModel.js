@@ -29,6 +29,29 @@ var orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    paymentMethod: {
+      type: String,
+      default: "Cash On Delivery",
+      enum: [
+        "Cash On Delivery",
+        "Card Payment",
+        "SSlCommerz",
+        "Bkash",
+        "Stripe",
+      ], // enum means string objects
+    },
+    orderTotal: {
+      type: Number,
+      default: 0,
+    },
+    totalAfterDiscount: {
+      type: Number,
+      default: 0,
+    },
+    couponApplied: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
