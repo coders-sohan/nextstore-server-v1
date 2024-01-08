@@ -37,12 +37,7 @@ var productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    images: [
-      {
-        url: String,
-        id: String,
-      },
-    ],
+    images: [],
     quantity: {
       type: Number,
       required: true,

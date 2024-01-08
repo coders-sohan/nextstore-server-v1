@@ -11,8 +11,13 @@ cloudinary.config({
 const cloudinaryImageUpload = async (fileToUploads) => {
   return new Promise((resolve) => {
     cloudinary.uploader.upload(fileToUploads, (result) => {
+      console.log(result);
       resolve(
-        { url: result.secure_url, id: result.public_id },
+        {
+          url: result.secure_url,
+          asset_id: result.asset_id,
+          public_id: result.public_id,
+        },
         {
           resource_type: "auto",
         }

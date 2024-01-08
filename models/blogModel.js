@@ -18,12 +18,7 @@ var blogSchema = new mongoose.Schema(
     shortDescription: {
       type: String,
     },
-    images: [
-      {
-        url: String,
-        id: String,
-      },
-    ],
+    images: [],
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",

@@ -506,7 +506,13 @@ const uploadProductImages = asyncHandler(async (req, res) => {
     }
     const product = await Product.findById(id);
     const images = product.images;
-    urls.forEach((url) => images.push(url));
+    urls.forEach((item) => {
+      images.push({
+        url: item.url,
+        asset_id: item.asset_id,
+        public_id: item.public_id,
+      });
+    });
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       { images: images },
