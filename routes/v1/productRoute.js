@@ -16,6 +16,7 @@ const {
   getAllOrders,
   addRating,
   uploadProductImages,
+  deleteProductImage,
 } = require("../../controllers/productController");
 
 // auth middleware will apply when project is ready for production
@@ -40,13 +41,14 @@ router.put("/add-to-cart", authMiddleware, addToCart);
 router.put("/place-order", authMiddleware, orderProduct);
 router.get("/all-orders", getAllOrders);
 router.put("/add-rating", authMiddleware, addRating);
-// product image upload routes
+// product image upload and delete routes
 router.put(
   "/upload-images/:id",
   uploadImage.array("images", 10),
   productImageResize,
   uploadProductImages
-);
+); // admin protected route
+router.put("/delete-image/:id/:public_id", deleteProductImage); // admin protected route
 
 // export router
 module.exports = router;

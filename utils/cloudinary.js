@@ -26,5 +26,21 @@ const cloudinaryImageUpload = async (fileToUploads) => {
   });
 };
 
+// cloudinary image delete
+const cloudinaryImageDelete = async (public_id) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.destroy(public_id, (result) => {
+      if (result === undefined || result.result === "not found") {
+        reject(new Error("Image not found or undefined"));
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
+
 // export cloudinary function
-module.exports = { cloudinaryImageUpload };
+module.exports = {
+  cloudinaryImageUpload,
+  cloudinaryImageDelete,
+};

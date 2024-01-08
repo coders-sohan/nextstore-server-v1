@@ -7,7 +7,10 @@ const slugify = require("slugify");
 const fs = require("fs");
 const uniqid = require("uniqid");
 const validateMongodbId = require("../utils/validateMongodbId");
-const { cloudinaryImageUpload } = require("../utils/cloudinary");
+const {
+  cloudinaryImageUpload,
+  cloudinaryImageDelete,
+} = require("../utils/cloudinary");
 
 // create new product controller
 const createNewProduct = asyncHandler(async (req, res) => {
@@ -528,6 +531,32 @@ const uploadProductImages = asyncHandler(async (req, res) => {
   }
 });
 
+// delete product image controller based on product id and image public id
+const deleteProductImage = asyncHandler(async (req, res) => {
+  const { id, public_id } = req.params;
+  validateMongodbId(id);
+  try {
+    const product = await Product.findById(id);
+    const images = product.images;
+    const filteredImages = images.filter(
+      (item) => item.public_id !== public_id
+    );
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { images: filteredImages },
+      { new: true }
+    );
+    await cloudinaryImageDelete(public_id);
+    res.json({
+      success: true,
+      message: "Product image deleted successfully...",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
 // export all controllers
 module.exports = {
   createNewProduct,
@@ -543,4 +572,5 @@ module.exports = {
   getAllOrders,
   addRating,
   uploadProductImages,
+  deleteProductImage,
 };
