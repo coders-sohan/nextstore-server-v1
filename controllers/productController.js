@@ -7,7 +7,7 @@ const slugify = require("slugify");
 const fs = require("fs");
 const uniqid = require("uniqid");
 const validateMongodbId = require("../utils/validateMongodbId");
-const cloudinaryImageUpload = require("../utils/cloudinary");
+const { cloudinaryImageUpload } = require("../utils/cloudinary");
 
 // create new product controller
 const createNewProduct = asyncHandler(async (req, res) => {

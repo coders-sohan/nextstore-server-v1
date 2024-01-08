@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const fs = require("fs");
 const validateMongodbId = require("../utils/validateMongodbId");
-const cloudinaryImageUpload = require("../utils/cloudinary");
+const { cloudinaryImageUpload } = require("../utils/cloudinary");
 
 // create new blog controller
 const createBlog = asyncHandler(async (req, res) => {
