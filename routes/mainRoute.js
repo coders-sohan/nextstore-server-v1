@@ -7,6 +7,7 @@ const blogRoute = require("./v1/blogRoute");
 const categoryRoute = require("./v1/categoryRoute");
 const blogCategoryRoute = require("./v1/blogCategoryRoute");
 const brandRoute = require("./v1/brandRoute");
+const colorRoute = require("./v1/colorRoute");
 const couponRoute = require("./v1/couponRoute");
 
 const allRoutes = [
@@ -33,6 +34,10 @@ const allRoutes = [
   {
     path: "/brand",
     route: brandRoute,
+  },
+  {
+    path: "/color",
+    route: colorRoute,
   },
   {
     path: "/coupon",

@@ -14,7 +14,7 @@ const {
 // auth middleware will apply when project is ready for production
 const { authMiddleware, isAdmin } = require("../../middlewares/authMiddleware");
 
-// create new brand route
+// all brand routes
 router.post("/create-brand", createBrand); // admin portected route
 router.get("/get-all", getAllBrands);
 router.get("/get-brand-by-id/:id", getBrandById);
