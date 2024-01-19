@@ -1,5 +1,6 @@
 // require all needed packages and files
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
@@ -15,6 +16,7 @@ dbConfig();
 
 // all use here
 app.use(morgan("dev"));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
