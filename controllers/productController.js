@@ -16,6 +16,7 @@ const {
 const createNewProduct = asyncHandler(async (req, res) => {
   try {
     if (req.body.title) {
+      req.body.title = req.body.title.replace(/&/g, "and");
       req.body.slug = slugify(req.body.title, {
         remove: /[*+~.()'"!:@]/g,
         lower: true,
@@ -96,9 +97,16 @@ const updateProductById = asyncHandler(async (req, res) => {
   try {
     const productById = await Product.findById(id);
     if (productById) {
-      // Remove the slug field from the request body
       const updateData = { ...req.body };
-      delete updateData.slug;
+      // If productById has no slug, generate it from the existing product title
+      if (!productById.slug && productById.title) {
+        const title = productById.title.replace(/&/g, 'and');
+        updateData.slug = slugify(title, {
+          remove: /[*+~.()'"!:@]/g,
+          lower: true,
+          trim: true,
+        });
+      }
       // update product
       const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
         new: true,
