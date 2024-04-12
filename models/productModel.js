@@ -77,6 +77,7 @@ var productSchema = new mongoose.Schema(
     //   },
     // ],
     colors: [],
+    sizes: [],
     tags: [],
     ratings: [
       {
